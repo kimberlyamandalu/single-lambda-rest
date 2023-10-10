@@ -1,0 +1,56 @@
+service: ${self:custom.defaults.service}-ddb-single-lambda-ddb
+frameworkVersion: ${self:custom.defaults.version}
+provider:
+  name: aws
+  stage: ${self:custom.defaults.stage}
+  region: ${self:custom.defaults.region}
+  deploymentBucket:
+    name: ${self:custom.defaults.service}-${self:provider.region}-${aws:accountId}
+    serverSideEncryption: AES256
+custom:
+  base: ${self:service}-${self:provider.stage}
+  defaults: ${file(../../../defaults/cloudgto.yml):defaults}
+plugins:
+  - serverless-deployment-bucket
+resources:
+  Resources:
+    DynamoDbTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.base}-single-lambda-ddb
+        BillingMode: PROVISIONED
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: item
+            AttributeType: S
+          - AttributeName: color
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: "5"
+          WriteCapacityUnits: "2"
+        GlobalSecondaryIndexes:
+          - IndexName: item-color
+            KeySchema:
+              - AttributeName: item
+                KeyType: HASH
+              - AttributeName: color
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+        Tags:
+          - Key: description
+            Value: stores item info
+  Outputs:
+    DynamoDBTableName:
+      Description: DynamoDB Table Name
+      Value: ${self:custom.base}-single-lambda-ddb
+    DynamoDBTableArn:
+      Description: DynamoDB Table Arn
+      Value:
+        Fn::GetAtt:
+          - DynamoDbTable
+          - Arn
