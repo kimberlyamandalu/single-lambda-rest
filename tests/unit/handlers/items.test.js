@@ -25,7 +25,7 @@ describe('Test lambda with many routes', () => {
 		const event = require('../../../events/createItemById.json')
 
 		const item = JSON.parse(event.body)
-		const cognitoUserId = eventJSON.requestContext.authorizer.claims.sub
+		const cognitoUserId = event.requestContext.authorizer.claims.sub
 
 		const expectedItem = expect.objectContaining({
 			...item,
@@ -51,7 +51,7 @@ describe('Test lambda with many routes', () => {
 		const event = require('../../../events/getItemById.json')
 
 		const id = event.pathParameters?.id
-		const cognitoUserId = eventJSON.requestContext.authorizer.claims.sub
+		const cognitoUserId = event.requestContext.authorizer.claims.sub
 
 		const Item = {
 			[keySchema.PK]: id
@@ -83,7 +83,7 @@ describe('Test lambda with many routes', () => {
 		const event = require('../../../events/updateItemById.json')
 
 		const id = event.pathParameters?.id
-		const cognitoUserId = eventJSON.requestContext.authorizer.claims.sub
+		const cognitoUserId = event.requestContext.authorizer.claims.sub
 
 		const item = JSON.parse(event.body)
 		const expectedItem = expect.objectContaining({
