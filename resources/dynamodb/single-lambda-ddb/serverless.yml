@@ -41,6 +41,9 @@ resources:
                 KeyType: RANGE
             Projection:
               ProjectionType: ALL
+            ProvisionedThroughput:
+              ReadCapacityUnits: "5"
+              WriteCapacityUnits: "2"
         Tags:
           - Key: description
             Value: stores item info
